@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <title>Pinora — Discover Wallpapers &amp; Ideas</title>
+  <style>
+:root{--red:#e60023;--ink:#242424;--muted:#767676;--line:#eee;--soft:#f1f1f1}
+*{box-sizing:border-box}
+body{margin:0;background:#fff;color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.topbar{height:72px;position:sticky;top:0;z-index:20;background:#ffffffed;backdrop-filter:blur(12px);display:flex;align-items:center;gap:14px;padding:0 22px;border-bottom:1px solid #f4f4f4}
+.brand{display:flex;align-items:center;gap:8px;font-weight:800;font-size:25px;white-space:nowrap}
+.logo{display:grid;place-items:center;width:38px;height:38px;background:var(--red);color:#fff;border-radius:50%;font-size:25px}
+.searchbar{height:48px;display:flex;align-items:center;gap:8px;background:#efefef;border-radius:28px;padding:0 16px;flex:1;min-width:80px}
+.searchbar input{border:0;outline:0;background:transparent;width:100%;min-width:0;font-size:16px}
+.searchbar button{border:0;background:transparent;font-size:23px}
+.topbtn{border:0;background:transparent;border-radius:24px;padding:12px 15px;font-weight:700}
+.topbtn.active{background:#222;color:white}
+.create{background:var(--red);color:#fff;border:0;border-radius:24px;padding:12px 17px;font-weight:700;white-space:nowrap}
+main{max-width:1600px;margin:auto;padding:18px 22px 35px}
+.hero{text-align:center;padding:18px 10px 8px}
+.hero h1{font-size:clamp(27px,4vw,43px);margin:4px 0 8px;letter-spacing:-1px}
+.hero p{color:var(--muted);margin:0}
+.filters{display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap;margin:19px 0}
+.chip,.select{border:0;background:#f1f1f1;border-radius:24px;padding:10px 15px;font-weight:650;color:#333}
+.chip.active{background:#222;color:#fff}
+.select{border:1px solid #e5e5e5;background:white}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0 18px}
+.toolbar-left,.toolbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.smallbtn{border:0;background:#f1f1f1;border-radius:22px;padding:10px 14px;font-weight:650}
+.smallbtn.red{background:var(--red);color:#fff}
+.results-label{font-size:13px;color:var(--muted)}
+.grid{columns:5 205px;column-gap:15px}
+.pin{display:inline-block;width:100%;break-inside:avoid;margin:0 0 16px;border-radius:17px;overflow:hidden;background:#f4f4f4;position:relative}
+.image-wrap{position:relative;background:#eee;min-height:100px}
+.pin img,.pin video{width:100%;height:auto;display:block;object-fit:cover}
+.pin img{cursor:zoom-in}
+.pin-actions{position:absolute;top:10px;right:10px;display:flex;gap:7px;opacity:0;transition:.18s}
+.pin:hover .pin-actions,.pin:focus-within .pin-actions{opacity:1}
+.overlaybtn{border:0;border-radius:22px;background:#fff;color:#222;padding:10px 12px;font-weight:700;box-shadow:0 2px 10px #0002}
+.overlaybtn.save{background:var(--red);color:#fff}
+.pin-info{padding:10px 11px 12px;background:#fff}
+.pin-title{font-weight:700;line-height:1.3;margin-bottom:5px}
+.pin-meta{font-size:12px;color:var(--muted);line-height:1.45;overflow-wrap:anywhere}
+.pin-bottom{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+.pin-bottom button{border:0;border-radius:20px;background:#f1f1f1;padding:8px 11px;font-size:13px;font-weight:650}
+.pin-bottom .download{background:#222;color:#fff}
+.pin-bottom .saved{background:var(--red);color:#fff}
+.empty{text-align:center;padding:55px 15px;color:var(--muted);display:none}
+footer{text-align:center;color:#888;border-top:1px solid var(--line);padding:26px 12px;font-size:13px}
+.modal{display:none;position:fixed;inset:0;background:#0009;z-index:50;align-items:center;justify-content:center;padding:15px}
+.modal.show{display:flex}
+.dialog{background:#fff;border-radius:18px;width:min(760px,100%);max-height:90vh;overflow:auto;padding:18px}
+.dialog-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.dialog-head h2{margin:5px 0 14px}
+.close{border:0;border-radius:50%;background:#eee;width:38px;height:38px;font-size:20px}
+.preview-img{display:block;max-width:100%;max-height:62vh;object-fit:contain;margin:auto;border-radius:12px}
+.dialog-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px}
+.dialog-actions button{border:0;border-radius:22px;padding:11px 16px;font-weight:700;background:#eee}
+.dialog-actions .red{background:var(--red);color:#fff}
+.notice{font-size:13px;line-height:1.55;color:#777}
+@media(max-width:900px){.grid{columns:4 180px}}
+@media(max-width:650px){
+ .topbar{height:62px;padding:0 9px;gap:7px}.brand{font-size:20px}.logo{width:32px;height:32px;font-size:21px}
+ .topbtn{display:none}.create{padding:10px 12px;font-size:13px}
+ main{padding:10px 10px 25px}.hero{padding:13px 5px 5px}.hero p{font-size:13px}
+ .grid{columns:2 135px;column-gap:9px}.pin{margin-bottom:10px;border-radius:13px}
+ .pin-actions{opacity:1;top:7px;right:7px}.overlaybtn{padding:8px 9px;font-size:12px}
+ .pin-info{padding:8px}.pin-title{font-size:14px}.pin-meta{font-size:11px}
+ .pin-bottom{gap:5px}.pin-bottom button{padding:7px 8px;font-size:11px}
+ .toolbar{margin:10px 0}.toolbar-left,.toolbar-right{gap:6px}
+ .smallbtn,.chip,.select{padding:9px 11px;font-size:12px}
+}
+</style>
+ </head>
+ <body>
+  <header class="topbar">
+   <div class="brand">
+    <span class="logo">P</span>Pinora
+   </div>
+   <div class="searchbar">
+    <input id="query" type="search" placeholder="Search wallpapers, nature, art…">
+    <button id="searchBtn" aria-label="Search">⌕</button>
+   </div>
+   <button class="topbtn active" id="homeBtn">Home</button>
+   <button class="topbtn" id="savedBtn">Saved</button>
+   <button class="create" id="uploadBtn">＋ Create</button>
+  </header>
+  <main>
+   <section class="hero">
+    <h1>Find your next inspiration.</h1>
+    <p>Beautiful images and wallpapers for every screen.</p>
+   </section>
+   <div class="filters" id="categoryFilters">
+    <button class="chip active" data-cat="All">For you</button>
+    <button class="chip" data-cat="Nature">Nature</button>
+    <button class="chip" data-cat="Shiva">Shiva</button>
+    <button class="chip" data-cat="Art">Art</button>
+    <button class="chip" data-cat="Fashion">Fashion</button>
+    <button class="chip" data-cat="Travel">Travel</button>
+    <button class="chip" data-cat="Architecture">Architecture</button>
+   </div>
+   <div class="toolbar">
+    <div class="toolbar-left">
+     <select class="select" id="wallpaperType" aria-label="Wallpaper type"> <option value="all">All screens</option><option value="mobile">Mobile wallpaper</option><option value="desktop">Desktop wallpaper</option> </select> <select class="select" id="sortType" aria-label="Sort images"> <option value="relevant">Best match</option><option value="portrait">Portrait first</option><option value="landscape">Landscape first</option> </select>
+    </div>
+    <div class="toolbar-right">
+     <button class="smallbtn red" id="upload2">＋ Upload photo / video</button>
+     <button class="smallbtn" id="boardsBtn">▣ My boards (<span id="savedCount">0</span>)</button>
+    </div>
+   </div>
+   <div class="results-label" id="resultsLabel">Explore ideas · Search free Wikimedia Commons images</div>
+   <div class="grid" id="grid"></div>
+   <div class="empty" id="empty">No images found. Try another keyword or choose All screens.</div>
+  </main>
+  <footer>
+   <b>Pinora</b> · Discover. Create. Inspire.
+   <br>
+   <br>
+   Image results from Wikimedia Commons. Check each source page for license and attribution before reuse.
+   <br>
+   <br>
+   Made with ♥ by <b>Sudarsanan K R</b>
+  </footer>
+  <input id="fileInput" type="file" accept="image/*,video/*" multiple hidden>
+  <div class="modal" id="modal">
+   <div class="dialog">
+    <div class="dialog-head">
+     <h2 id="modalTitle">Preview</h2>
+     <button class="close" id="closeModal">×</button>
+    </div>
+    <div id="modalBody"></div>
+   </div>
+  </div>
+  <script>
+const $=id=>document.getElementById(id);
+const demo=[
+ {id:'d1',title:'Mountain lake wallpaper',cat:'Nature',src:'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=900',width:900,height:1200},
+ {id:'d2',title:'Creative workspace',cat:'Art',src:'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=900',width:900,height:650},
+ {id:'d3',title:'Modern architecture',cat:'Architecture',src:'https://images.unsplash.com/photo-1511818966892-d7d671e672a2?w=900',width:900,height:1200},
+ {id:'d4',title:'Street style inspiration',cat:'Fashion',src:'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=900',width:900,height:1200},
+ {id:'d5',title:'Mountain peaks',cat:'Nature',src:'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900',width:900,height:1200},
+ {id:'d6',title:'Interior inspiration',cat:'Art',src:'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=900',width:900,height:650},
+ {id:'d7',title:'Ocean blue',cat:'Nature',src:'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=900',width:900,height:650},
+ {id:'d8',title:'Artful details',cat:'Art',src:'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=900',width:900,height:1200},
+ {id:'d9',title:'Weekend getaway',cat:'Travel',src:'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=900',width:900,height:650},
+ {id:'d10',title:'Fashion editorial',cat:'Fashion',src:'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=900',width:900,height:1200}
+];
+let pins=[...demo],saved=JSON.parse(localStorage.getItem('pinoraSavedV2')||'[]'),liked=JSON.parse(localStorage.getItem('pinoraLikedV2')||'[]');
+let activeCat='All',savedOnly=false,lastSearch='';
+function persist(){localStorage.setItem('pinoraSavedV2',JSON.stringify(saved));localStorage.setItem('pinoraLikedV2',JSON.stringify(liked));$('savedCount').textContent=saved.length}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function currentList(){
+ let list=pins.filter(p=>activeCat==='All'||(p.cat||'').toLowerCase().includes(activeCat.toLowerCase())||(p.title||'').toLowerCase().includes(activeCat.toLowerCase()));
+ const type=$('wallpaperType').value;
+ if(type==='mobile')list=list.filter(p=>p.height&&p.width&&p.height>p.width);
+ if(type==='desktop')list=list.filter(p=>p.height&&p.width&&p.width>=p.height);
+ if(savedOnly)list=list.filter(p=>saved.includes(p.id));
+ const sort=$('sortType').value;
+ if(sort==='portrait')list.sort((a,b)=>(b.height/b.width)-(a.height/a.width));
+ if(sort==='landscape')list.sort((a,b)=>(b.width/b.height)-(a.width/a.height));
+ return list;
+}
+function render(){
+ const list=currentList();$('grid').innerHTML='';$('empty').style.display=list.length?'none':'block';
+ $('resultsLabel').textContent=(savedOnly?'Your saved pins':lastSearch?'Search results for “'+lastSearch+'”':'Explore ideas')+' · '+list.length+' images';
+ for(const p of list){
+  const card=document.createElement('article');card.className='pin';
+  const wrap=document.createElement('div');wrap.className='image-wrap';
+  const media=p.type==='video'?document.createElement('video'):document.createElement('img');
+  media.src=p.src;media.alt=p.title||'Pinora image';media.loading='lazy';
+  if(p.type==='video'){media.controls=true;media.playsInline=true}else media.onclick=()=>openPreview(p);
+  wrap.append(media);
+  const overlay=document.createElement('div');overlay.className='pin-actions';
+  const quickSave=document.createElement('button');quickSave.className='overlaybtn save';quickSave.textContent=saved.includes(p.id)?'Saved':'Save';quickSave.onclick=()=>toggleSave(p.id);
+  overlay.append(quickSave);wrap.append(overlay);
+  const info=document.createElement('div');info.className='pin-info';
+  const title=document.createElement('div');title.className='pin-title';title.textContent=p.title||'Untitled image';
+  const meta=document.createElement('div');meta.className='pin-meta';meta.textContent=(p.cat||'Image')+' · '+(p.owner||'Pinora');
+  const actions=document.createElement('div');actions.className='pin-bottom';
+  const like=document.createElement('button');like.textContent=(liked.includes(p.id)?'♥ Liked':'♡ Like');like.onclick=()=>toggleLike(p.id);
+  const save=document.createElement('button');save.className=saved.includes(p.id)?'saved':'';save.textContent=saved.includes(p.id)?'✓ Saved':'＋ Save';save.onclick=()=>toggleSave(p.id);
+  const down=document.createElement('button');down.className='download';down.textContent='⬇ Download';down.onclick=()=>downloadImage(p);
+  const source=document.createElement('button');source.textContent='↗ Source';source.onclick=()=>p.sourceUrl?window.open(p.sourceUrl,'_blank','noopener'):openPreview(p);
+  actions.append(like,save,down,source);info.append(title,meta,actions);card.append(wrap,info);$('grid').append(card);
+ }
+ persist();
+}
+function toggleSave(id){saved=saved.includes(id)?saved.filter(x=>x!==id):[...saved,id];render()}
+function toggleLike(id){liked=liked.includes(id)?liked.filter(x=>x!==id):[...liked,id];render()}
+function openModal(title,body){$('modalTitle').textContent=title;$('modalBody').innerHTML=body;$('modal').classList.add('show')}
+function openPreview(p){
+ openModal(p.title||'Image',`<img class="preview-img" src="${esc(p.src)}" alt="${esc(p.title)}"><div class="dialog-actions"><button class="red" id="previewDownload">⬇ Download image</button><button id="previewSave">${saved.includes(p.id)?'✓ Saved':'＋ Save to boards'}</button><button id="previewSource">↗ Open source</button></div><p class="notice">Please check the original source page for the image license and attribution rules before reuse.</p>`);
+ $('previewDownload').onclick=()=>downloadImage(p);
+ $('previewSave').onclick=()=>{toggleSave(p.id);$('previewSave').textContent=saved.includes(p.id)?'✓ Saved':'＋ Save to boards'};
+ $('previewSource').onclick=()=>p.sourceUrl?window.open(p.sourceUrl,'_blank','noopener'):alert('Source page is not available for this sample image.');
+}
+async function downloadImage(p){
+ try{
+  if(p.local){const a=document.createElement('a');a.href=p.src;a.download=p.filename||'pinora-image';document.body.append(a);a.click();a.remove();return}
+  const response=await fetch(p.downloadUrl||p.src,{mode:'cors'});
+  if(!response.ok)throw new Error('Download unavailable');
+  const blob=await response.blob(),url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download=(p.title||'pinora-wallpaper').replace(/[^\w.-]+/g,'_')+'.jpg';
+  document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+ }catch(e){
+  if(p.sourceUrl){window.open(p.sourceUrl,'_blank','noopener');alert('Direct download was blocked by the image host. The original image page has been opened; use its download option.')}
+  else alert('Could not download this image. Please try again.');
+ }
+}
+async function searchOnline(q){
+ lastSearch=q;
+ $('resultsLabel').textContent='Searching Wikimedia Commons…';$('grid').innerHTML='';$('empty').style.display='none';
+ const screen=$('wallpaperType').value;
+ let terms=q;
+ if(screen==='mobile')terms+=' portrait mobile wallpaper';
+ if(screen==='desktop')terms+=' landscape desktop wallpaper';
+ try{
+  const params=new URLSearchParams({action:'query',generator:'search',gsrsearch:terms,gsrnamespace:'6',gsrlimit:'50',prop:'imageinfo',iiprop:'url|size|extmetadata',iiurlwidth:'1200',format:'json',origin:'*'});
+  const res=await fetch('https://commons.wikimedia.org/w/api.php?'+params.toString());
+  if(!res.ok)throw new Error('API request failed');
+  const data=await res.json(),pages=Object.values(data.query?.pages||{});
+  const clean=v=>v?.value?.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim()||'';
+  const results=pages.filter(x=>x.imageinfo?.[0]?.thumburl).map(x=>{
+   const im=x.imageinfo[0],meta=im.extmetadata||{};
+   return{id:'wm'+x.pageid,title:x.title.replace(/^File:/,'').replace(/\.[^.]+$/,'').replace(/_/g,' '),cat:'Search',src:im.thumburl,downloadUrl:im.url||im.thumburl,width:im.width||0,height:im.height||0,type:'image',sourceUrl:im.descriptionurl,owner:clean(meta.Artist)||clean(meta.Credit)||'Wikimedia Commons'};
+  });
+  pins=results;activeCat='All';savedOnly=false;
+  document.querySelectorAll('.chip').forEach(b=>b.classList.toggle('active',b.dataset.cat==='All'));
+  render();
+  if(!results.length)alert('No images found. Try another keyword, such as “Shiva wallpaper” or “mountain landscape”.');
+ }catch(e){$('resultsLabel').textContent='Image search could not load.';alert('Search failed. Check your internet connection and try again.')}
+}
+function runSearch(){const q=$('query').value.trim();if(!q){alert('Please type what you want to find.');return}searchOnline(q)}
+$('searchBtn').onclick=runSearch;$('query').onkeydown=e=>{if(e.key==='Enter')runSearch()};
+$('homeBtn').onclick=()=>{savedOnly=false;activeCat='All';lastSearch='';$('query').value='';pins=[...demo];document.querySelectorAll('.chip').forEach(b=>b.classList.toggle('active',b.dataset.cat==='All'));$('homeBtn').classList.add('active');$('savedBtn').classList.remove('active');render()};
+$('savedBtn').onclick=$('boardsBtn').onclick=()=>{savedOnly=true;$('savedBtn').classList.add('active');$('homeBtn').classList.remove('active');render()};
+document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{activeCat=b.dataset.cat;savedOnly=false;document.querySelectorAll('.chip').forEach(x=>x.classList.toggle('active',x===b));render()});
+$('wallpaperType').onchange=()=>{if(lastSearch)searchOnline(lastSearch);else render()};
+$('sortType').onchange=render;
+function chooseFiles(){$('fileInput').click()}
+$('uploadBtn').onclick=$('upload2').onclick=chooseFiles;
+$('fileInput').onchange=e=>{
+ for(const f of [...e.target.files]){const src=URL.createObjectURL(f);pins.unshift({id:'local'+Date.now()+Math.random(),title:f.name,cat:'Your uploads',src,type:f.type.startsWith('video')?'video':'image',width:0,height:0,local:true,filename:f.name})}
+ savedOnly=false;render();e.target.value='';
+};
+$('closeModal').onclick=()=>$('modal').classList.remove('show');
+$('modal').onclick=e=>{if(e.target===$('modal'))$('modal').classList.remove('show')};
+persist();render();
+</script>
+ </body>
+</html>
