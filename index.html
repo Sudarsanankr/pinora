@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#fff">
+  <title>Pinora — Discover. Create. Inspire.</title>
+  <style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;color:#222;background:#fff}header{height:68px;display:flex;align-items:center;gap:15px;padding:0 18px;border-bottom:1px solid #eee;position:sticky;top:0;background:#fffffff2;z-index:3}.logo{font-size:25px;font-weight:800;white-space:nowrap}.mark{display:inline-grid;place-items:center;background:#e60023;color:white;width:34px;height:34px;border-radius:50%;margin-right:7px}.search{display:flex;flex:1;background:#eee;border-radius:30px;padding:0 15px}.search input{width:100%;height:44px;border:0;outline:0;background:transparent;font-size:15px}.search button,header button{border:0;background:transparent;cursor:pointer;font-size:15px}.nav{padding:10px;border-radius:22px}.nav.active{background:#222;color:white}main{max-width:1450px;margin:auto;padding:18px}.hero{text-align:center;padding:12px}.hero h1{font-size:clamp(27px,4vw,42px);margin:5px}.hero p{color:#777}.tabs,.tools{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin:17px}.tab,.pill{border:0;border-radius:22px;padding:10px 16px;background:#f2f2f2;cursor:pointer;font-weight:600}.tab.active,.pill.red{background:#e60023;color:#fff}.grid{columns:5 190px;column-gap:14px}.pin{break-inside:avoid;margin:0 0 15px;border-radius:15px;overflow:hidden;background:#f4f4f4}.pin img,.pin video{width:100%;display:block;max-height:520px;object-fit:cover}.info{background:#fff;padding:9px}.info small{display:block;color:#777;margin:5px 0}.actions{display:flex;gap:5px}.actions button{border:0;border-radius:18px;padding:7px 9px;cursor:pointer;background:#eee}.actions .save{background:#e60023;color:#fff}.empty{text-align:center;color:#777;padding:40px;display:none}footer{text-align:center;color:#777;padding:30px;border-top:1px solid #eee;margin-top:25px}.modal{display:none;position:fixed;inset:0;background:#0008;z-index:5;align-items:center;justify-content:center;padding:15px}.modal.show{display:flex}.panel{background:white;padding:22px;border-radius:18px;width:min(500px,100%)}.panel input{width:100%;padding:12px;border:1px solid #ddd;border-radius:9px;margin:9px 0}.close{float:right;border:0;border-radius:50%;padding:8px}.note{font-size:13px;color:#777;line-height:1.5}@media(max-width:700px){header{padding:0 9px;gap:8px}.logo{font-size:21px}.nav{display:none}main{padding:10px}.grid{columns:2 140px;column-gap:9px}.pin{margin-bottom:10px}.pin img,.pin video{max-height:380px}}
+</style>
+ </head>
+ <body>
+  <header>
+   <div class="logo">
+    <span class="mark">P</span>Pinora
+   </div>
+   <div class="search">
+    <input id="query" placeholder="Search photos, videos and ideas…">
+    <button id="search">⌕</button>
+   </div>
+   <button class="nav active" id="home">Home</button>
+   <button class="nav" id="savedView">Saved</button>
+   <button class="nav" id="upload">＋ Create</button>
+  </header>
+  <main>
+   <section class="hero">
+    <h1>Discover what inspires you.</h1>
+    <p>Find ideas, watch videos, and save your inspiration.</p>
+   </section>
+   <div class="tabs">
+    <button class="tab active" data-cat="All">For you</button>
+    <button class="tab" data-cat="Fashion">Fashion</button>
+    <button class="tab" data-cat="Art">Art</button>
+    <button class="tab" data-cat="Design">Design</button>
+    <button class="tab" data-cat="Travel">Travel</button>
+    <button class="tab" data-cat="Nature">Nature</button>
+    <button class="tab" data-cat="Videos">Videos</button>
+   </div>
+   <div class="tools">
+    <button class="pill red" id="upload2">＋ Upload photo / video</button>
+    <button class="pill" id="connect">⚙ Connect image &amp; video search</button>
+    <button class="pill" id="boards">▣ My boards</button>
+   </div>
+   <div class="grid" id="grid"></div>
+   <div class="empty" id="empty">No results. Try another search or connect Pexels.</div>
+  </main>
+  <footer>
+   <b>Pinora</b> · Discover. Create. Inspire.
+   <br>
+   <br>
+   Made with ♥ by <b>Sudarsanan K R</b>
+  </footer>
+  <input id="files" type="file" accept="image/*,video/*" multiple hidden>
+  <div class="modal" id="modal">
+   <div class="panel">
+    <button class="close" id="close">✕</button>
+    <div id="modalContent"></div>
+   </div>
+  </div>
+  <script>
+const samples=[
+['Coastal escape','Travel','https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=700'],
+['Creative workspace','Design','https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=700'],
+['Modern architecture','Art','https://images.unsplash.com/photo-1511818966892-d7d671e672a2?w=700'],
+['Street style','Fashion','https://images.unsplash.com/photo-1483985988355-763728e1935b?w=700'],
+['Mountain mornings','Nature','https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=700'],
+['Interior inspiration','Design','https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=700'],
+['Ocean blue','Nature','https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=700'],
+['Artful details','Art','https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=700'],
+['Weekend getaway','Travel','https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=700'],
+['Fashion editorial','Fashion','https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=700']];
+let pins=samples.map((a,i)=>({id:'demo'+i,title:a[0],cat:a[1],src:a[2],type:'image'})),saved=JSON.parse(localStorage.getItem('pinoraSaved')||'[]'),likes=JSON.parse(localStorage.getItem('pinoraLikes')||'[]'),cat='All',showSaved=false;
+const $=id=>document.getElementById(id);function persist(){localStorage.setItem('pinoraSaved',JSON.stringify(saved));localStorage.setItem('pinoraLikes',JSON.stringify(likes))}
+function render(){let q=$('query').value.toLowerCase();let list=pins.filter(p=>(cat==='All'||(cat==='Videos'?p.type==='video':p.cat===cat))&&(!q||(p.title+' '+p.cat).toLowerCase().includes(q)));if(showSaved)list=list.filter(p=>saved.includes(p.id));$('grid').innerHTML='';$('empty').style.display=list.length?'none':'block';list.forEach(p=>{let card=document.createElement('article');card.className='pin';let m=p.type==='video'?document.createElement('video'):document.createElement('img');m.src=p.src;if(p.type==='video'){m.controls=true;m.playsInline=true}else{m.loading='lazy';m.alt=p.title}card.append(m);let info=document.createElement('div');info.className='info';let title=document.createElement('b');title.textContent=p.title;let small=document.createElement('small');small.textContent=p.cat+' · '+(p.owner||'Pinora');let actions=document.createElement('div');actions.className='actions';let like=document.createElement('button');like.textContent=(likes.includes(p.id)?'♥':'♡')+' Like';like.onclick=()=>{likes=likes.includes(p.id)?likes.filter(x=>x!==p.id):[...likes,p.id];persist();render()};let save=document.createElement('button');save.className='save';save.textContent=saved.includes(p.id)?'✓ Saved':'＋ Save';save.onclick=()=>{saved=saved.includes(p.id)?saved.filter(x=>x!==p.id):[...saved,p.id];persist();render()};let dl=document.createElement('button');dl.textContent='↓ Download';dl.onclick=()=>{if(p.local){let a=document.createElement('a');a.href=p.src;a.download=p.filename||'pinora-media';a.click()}else if(p.download){window.open(p.download,'_blank')}else alert('This image source may restrict downloads. Use the original source and follow its download terms.')};actions.append(like,save,dl);info.append(title,small,actions);card.append(info);$('grid').append(card)})}
+function modal(html){$('modalContent').innerHTML=html;$('modal').classList.add('show')}
+$('close').onclick=()=>$('modal').classList.remove('show');function choose(){ $('files').click() }$('upload').onclick=$('upload2').onclick=choose;
+$('files').onchange=e=>{[...e.target.files].forEach(f=>{let src=URL.createObjectURL(f);pins.unshift({id:'local'+Date.now()+Math.random(),title:f.name,cat:'Your uploads',src,type:f.type.startsWith('video')?'video':'image',local:true,filename:f.name})});cat='All';document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.cat==='All'));render()};
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{cat=b.dataset.cat;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));render()});
+$('home').onclick=()=>{showSaved=false;render()};$('savedView').onclick=()=>{showSaved=true;render()};
+$('boards').onclick=()=>modal('<h2>My boards</h2><p>'+saved.length+' saved pins on this device.</p><p class="note">Saved items are stored locally in this browser in this starter version.</p>');
+$('connect').onclick=()=>modal('<h2>Connect Pexels search</h2><p class="note">Get a free API key from <a href="https://www.pexels.com/api/" target="_blank">pexels.com/api</a>. Your key is stored in this browser only. Search photos and videos from Pexels.</p><input id="apiKey" type="password" placeholder="Paste Pexels API key"><button class="pill red" id="saveKey">Save API key</button>');
+$('modalContent').addEventListener('click',e=>{if(e.target.id==='saveKey'){localStorage.setItem('pinoraKey',$('apiKey').value.trim());$('modal').classList.remove('show');alert('API key saved')}})
+async function searchOnline(q){let key=localStorage.getItem('pinoraKey');if(!key){alert('First connect your Pexels API key.');return}try{let [a,b]=await Promise.all([fetch('https://api.pexels.com/v1/search?query='+encodeURIComponent(q)+'&per_page=30',{headers:{Authorization:key}}),fetch('https://api.pexels.com/videos/search?query='+encodeURIComponent(q)+'&per_page=20',{headers:{Authorization:key}})]);if(!a.ok||!b.ok)throw Error();let photos=await a.json(),videos=await b.json();pins=[...photos.photos.map(x=>({id:'p'+x.id,title:x.alt||q,cat:'Search',src:x.src.large,type:'image',download:x.url,owner:x.photographer})),...videos.videos.map(x=>({id:'v'+x.id,title:'Video by '+x.user.name,cat:'Videos',src:(x.video_files.find(f=>f.quality==='sd')||x.video_files[0]).link,type:'video',download:x.url,owner:x.user.name}))];cat='All';showSaved=false;render()}catch(e){alert('Search failed. Check your API key or try again.')}}
+$('search').onclick=()=>{let q=$('query').value.trim();if(q)searchOnline(q);else render()};$('query').onkeydown=e=>{if(e.key==='Enter')$('search').click()};render();
+</script>
+ </body>
+</html>
